@@ -7,7 +7,7 @@ namespace WilmerCastillo_Ap1_P1.Models
 
         [Key]
 
-        public int prestamosId { get; set; }
+        public int PrestamosId { get; set; }
 
         [Required(ErrorMessage = "Favor Ingresar el Nombre del Deudador")]
 
