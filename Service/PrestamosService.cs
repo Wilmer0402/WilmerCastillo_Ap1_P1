@@ -3,7 +3,7 @@ using WilmerCastillo_Ap1_P1.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace WilmerCastillo_Ap1_.Service
+namespace WilmerCastillo_Ap1_P1.Service
 
 {
     public class PrestamosService
