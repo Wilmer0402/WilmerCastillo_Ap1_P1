@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WilmerCastillo_Ap1_P1.Components;
 using WilmerCastillo_Ap1_P1.DAL;
 using WilmerCastillo_Ap1_P1.Models;
+using WilmerCastillo_Ap1_P1.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,7 @@ builder.Services.AddRazorComponents()
 var ConStr = builder.Configuration.GetConnectionString("ConStr");
 builder.Services.AddDbContext<Context>(w => w.UseSqlite(ConStr));
 
-builder.Services.AddScoped<Prestamos>();
+builder.Services.AddScoped<PrestamosService>();
 
 var app = builder.Build();
 

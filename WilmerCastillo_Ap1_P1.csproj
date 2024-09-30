@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Pages\PrestamosPages\" />
     <Folder Include="Data\" />
   </ItemGroup>
 
