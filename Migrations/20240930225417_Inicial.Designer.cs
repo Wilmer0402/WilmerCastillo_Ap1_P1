@@ -10,7 +10,7 @@ using WilmerCastillo_Ap1_P1.DAL;
 namespace WilmerCastillo_Ap1_P1.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20240924003134_Inicial")]
+    [Migration("20240930225417_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -19,19 +19,26 @@ namespace WilmerCastillo_Ap1_P1.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
-            modelBuilder.Entity("WilmerCastillo_Ap1_P1.Models.Registros", b =>
+            modelBuilder.Entity("WilmerCastillo_Ap1_P1.Models.Prestamos", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("PrestamosId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Nombres")
+                    b.Property<string>("Concepto")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Deudor")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("Registros");
+                    b.Property<float>("Monto")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("PrestamosId");
+
+                    b.ToTable("Prestamos");
                 });
 #pragma warning restore 612, 618
         }
