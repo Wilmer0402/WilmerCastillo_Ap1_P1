@@ -11,7 +11,7 @@ namespace WilmerCastillo_Ap1_P1.Models
 
         [Required(ErrorMessage = "Favor Ingresar el Nombre del Deudador")]
 
-        public string Deudador {  get; set; }
+        public string Deudor {  get; set; }
 
         [Required(ErrorMessage = "Favor Ingresar el Concepto")]
 
