@@ -1,0 +1,121 @@
+﻿@page "/Prestamos/Create"
+@rendermode InteractiveServer
+@inject PrestamosService prestamosService
+@inject NavigationManager navigation
+@inject IJSRuntime js
+
+
+<PageTitle>Registro Prestamos</PageTitle>
+<EditForm Model="prestamos" OnValidSubmit="Crear">
+    <div class="container">
+        <div class="card shadow-lg">
+
+            <div class="card-header">
+                <h5 class="card-title">Registro Prestamos</h5>
+            </div>
+            <div class="card-body">
+                <label for="id" class="form-label"><strong>PrestamosId</strong></label>
+                <InputNumber id="id" class="form-control" @bind-Value="prestamos.PrestamosId" @onchange="ValidarId"></InputNumber>
+                <ValidationMessage For="@(() =>prestamos.PrestamosId)"></ValidationMessage>
+
+                <label for="Deudor" class="form-label"><strong>Nombre del Deudor</strong></label>
+                <InputText id="Deudor" class="form-control" @bind-Value="prestamos.Deudor" @onchange=ValidarId></InputText>
+                <ValidationMessage For="@(() => prestamos.Deudor)"></ValidationMessage>
+
+                <label for="concepto" class="form-label"><strong>Concepto</strong></label>
+                <InputText id="concepto" class="form-control" @bind-Value="prestamos.Concepto" @onchange=ValidarId></InputText>
+                <ValidationMessage For="@(() => prestamos.Concepto)"></ValidationMessage>
+
+                @if (!string.IsNullOrEmpty(mensajeErrorNombre))
+                {
+                    <div class="text-danger">
+                        @mensajeErrorNombre
+                    </div>
+                }
+            </div>
+            <div class="col-5 ms-3"
+            <label for="Monto" class="form-label"><strong>Monto</strong></label>
+            <InputNumber id="SueldoMensaul" class="form-control" @bind-Value="prestamos.Monto"  Step="0.01" />
+            <ValidationMessage For="@(() =>prestamos.Monto)"></ValidationMessage>
+                @if (!string.IsNullOrEmpty(mensajeError))
+                {
+                        <div class="alert alert-danger" role="alert">
+                        @mensajeError
+                        </div>
+                }
+        </div>
+
+            <div class="card-footer">
+                <a href="/Prestamos/Index" class="btn btn-secondary text-white bi bi-arrow-left"> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy-fill"> Guardar</button>
+            </div>
+        </div>
+
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+
+    public int PrestamosId{ get; set; }
+
+    public Prestamos prestamos { get; set; } = new Prestamos();
+    private string mensajeError { get; set; } = string.Empty;
+    private string mensajeErrorNombre { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PrestamosId > 0)
+        {
+            prestamos = await prestamosService.Buscar(PrestamosId);
+        }
+    }
+
+    public async Task Crear()
+    {
+        mensajeError = string.Empty;
+
+        if (!await prestamosService.Existe(prestamos.PrestamosId))
+        {
+            if (!await prestamosService.ExistePorDeudor(prestamos.Deudor))
+            {
+                await prestamosService.Insertar(prestamos);
+                prestamos = new Prestamos();
+                navigation.NavigateTo("/Prestamos/Index");
+            }
+            else
+            {
+                mensajeErrorNombre = "El Deudor ya Existe, por favor, elija otro nombre";
+            }
+
+        }
+        else
+        {
+            mensajeError = "Error el Id ya existe. por favor, elija otro Id";
+        }
+    }
+
+    public async Task ValidarId(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out var id))
+        {
+            if (await prestamosService.Existe(id))
+            {
+                await js.InvokeVoidAsync("Alert", "Error el Id ya existe. Por favor, elija otro ID.");
+            }
+        }
+    }
+
+    public async Task ValidarDeudor(ChangeEventArgs e)
+    {
+        var nombre = e.Value.ToString();
+        mensajeErrorNombre = string.Empty;
+        if (await prestamosService.ExistePorDeudor(nombre))
+        {
+            mensajeErrorNombre = " El Nombre del Deudor ya existe. por favor, elija otro nombre";
+        }
+    }
+
+
+
+}
