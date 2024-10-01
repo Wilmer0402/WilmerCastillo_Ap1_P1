@@ -1,0 +1,99 @@
+﻿@page "/Prestamos/Index"
+@rendermode InteractiveServer
+@inject PrestamosService prestamosService
+@inject NavigationManager navigation
+
+<PageTitle>Registro Prestamos</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-black text-center">
+            <h5><strong>Registro Prestamos</strong></h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="filtrarPor">Filtrar por:</label>
+                    <select id="filtrarPor" class="form-select" @bind="FiltroSeleccionado">
+                        <option value="ID">ID</option>
+                        <option value="Deudor">Deudor</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 d-flex align-items-end">
+                    <div class="input-group">
+                        <input id="busqueda" type="text" class="form-control" @bind="CriterioBusqueda" placeholder="Buscar..." />
+                        <button @onclick="BuscarPrestamos" class="btn btn-primary bi bi-search"> Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            @* Botón Crear Maestro *@
+            <a href="/Prestamos/Create" class="btn btn-primary bi bi-plus-square-fill mt-3"> Crear</a>
+
+            @* Tabla de Maestros *@
+            <table class="table table-dark table-hover">
+                <thead class="table table-dark table-striped text-center text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre del Deudor</th>
+                        <th>Concepto</th>
+                        <th>Monto</th>
+                        <th>Ver</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prestamos in prestamos)
+                    {
+                        <tr>
+                            <td class="text-center">@prestamos.PrestamosId</td>
+                            <td class="text-center">@prestamos.Deudor</td>
+                            <td class="text-center">@prestamos.Concepto</td>
+                            <td class="text-center">@prestamos.Monto.ToString("N2")</td>
+
+                            <td class="text-center">
+                                <a href="/Prestamos/Details/@prestamos.PrestamosId" class="btn btn-outline-light bi bi-eye"></a>
+                            </td>
+                            <td class="text-center">
+                                <a href="/Prestamos/Edit/@prestamos.PrestamosId" class="btn btn-outline-light bi-pencil-square"></a>
+                            </td>
+                            <td class="text-center">
+                                <a href="/Prestamos/Delete/@prestamos.PrestamosId" class="btn btn-outline-light bi-trash"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Prestamos> prestamos = new List<Prestamos>();
+    private string FiltroSeleccionado { get; set; } = "ID";
+    private string CriterioBusqueda { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        prestamos = await prestamosService.Listar(a => true);
+    }
+
+    private async Task BuscarPrestamos()
+    {
+        switch (FiltroSeleccionado)
+        {
+            case "ID":
+                if (int.TryParse(CriterioBusqueda, out int id))
+                {
+                    prestamos = await prestamosService.Listar(a => a.PrestamosId== id);
+                }
+                break;
+
+            case "Deudor":
+                prestamos  = await prestamosService.Listar(e => e.Deudor.ToLower().Contains(CriterioBusqueda.ToLower()));
+                break;
+        }
+    }
+}
