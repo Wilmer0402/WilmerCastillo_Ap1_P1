@@ -1,0 +1,60 @@
+﻿@page "/Prestamos/Delete/{PrestamosId:int}"
+@rendermode InteractiveServer
+@inject PrestamosService prestamosService
+@inject NavigationManager navigation
+
+<PageTitle>Eliminar Prestamos</PageTitle>
+<EditForm Model="prestamos" OnValidSubmit="EliminarPrestamos">
+	<DataAnnotationsValidator />
+	<div class="card-shadow-lg">
+		<div class="card-header bg-white  text-black text-center" style="display: flex; align-items: center; justify-content: center;">
+			<h4 style="margin: 0 15px;"><strong>Eliminar Prestamo:</strong></h4>
+		</div>
+		<div class="card-body">
+			<h5><strong>¿Seguro que deseas eliminar el Prestamo Selecionado?</strong></h5>
+			<div class="mb-1"></div>
+			<p class="mb-0"><strong>Prestamo Id:</strong> @prestamos.PrestamosId</p>
+			<div class="mb-1">
+				<p class="mb-0"><strong>Nombre del Deudor:</strong> @prestamos.Deudor</p>
+				<div class="mb-1">
+					<p class="mb-0"><strong>Concepto:</strong> @prestamos.Concepto</p>
+					<div class="mb-1">
+						<p class="mb-0"><strong>Sueldo Mensual:</strong> @prestamos.Monto</p>
+						<div class="mb-1">
+						</div>
+					</div>
+
+					<div class="card-footer">
+						<a href="/Prestamos/Index" class="btn btn-secondary text-white bi bi-arrow-left"> Volver</a>
+						<button type="button" class="btn btn-primary bi bi-trash" @onclick="EliminarPrestamos"> Eliminar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+@code {
+
+	[Parameter]
+	public int PrestamosId { get; set; }
+	public Prestamos prestamos { get; set; } = new Prestamos();
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (PrestamosId > 0)
+		{
+			prestamos = await prestamosService.Buscar(PrestamosId);
+		}
+	}
+
+	public async Task EliminarPrestamos()
+	{
+		var eliminar = await prestamosService.Eliminar(prestamos.PrestamosId);
+
+		if (eliminar)
+		{
+			navigation.NavigateTo("/Prestamos/Index");
+		}
+	}
+}
