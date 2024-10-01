@@ -1,0 +1,94 @@
+﻿@page "/Prestamos/Edit/{PrestamosId:int}"
+@rendermode InteractiveServer
+@inject PrestamosService prestamosService
+@inject NavigationManager navigation
+
+<PageTitle>Editar Prestamos</PageTitle>
+<EditForm Model="prestamos" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header bg-white text-black text-center" style="display: flex; align-items: center; justify-content: center;">
+                <h4 style="margin: 0 15px;"><strong>Editar Prestamos:</strong></h4>
+            </div>
+            <div class="card-body">
+                @*Datos*@
+                <label for="id" class="form-label"><strong>ID</strong></label>
+                <InputNumber id="id" class="form-control" @bind-Value="prestamos.PrestamosId" readonly></InputNumber>
+
+                <label for="Deudor" class="form-label"><strong>Deudor</strong></label>
+                <InputText id="Deudor" class="form-control" @bind-Value="prestamos.Deudor"></InputText>
+                <ValidationMessage For="@(()=> prestamos.Deudor)"></ValidationMessage>
+
+                <label for="concepto" class="form-label"><strong>Concepto</strong></label>
+                <InputText id="concepto" class="form-control" @bind-Value="prestamos.Concepto"></InputText>
+                <ValidationMessage For="@(()=> prestamos.Concepto)"></ValidationMessage>
+
+
+                <label for="Monto" class="form-label"><strong>Monto</strong></label>
+                <InputNumber id="Monto" class="form-control" @bind-Value="prestamos.Monto"></InputNumber>
+                <ValidationMessage For="@(()=> prestamos.Monto)"></ValidationMessage>
+            </div>
+            <div class="card-footer">
+                @if (!string.IsNullOrEmpty(mensaje))
+                {
+                    <div class="alert alert-success" role="alert">
+                        @mensaje
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(mensajeError))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @mensajeError
+                    </div>
+                }
+                <a href="/Prestamos/Index" class="btn btn-secondary text-white bi bi-arrow-left"> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-pencil-square"> Modificar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int PrestamosId { get; set; }
+    public Prestamos prestamos { get; set; } = new Prestamos();
+    public string mensaje { get; set; }
+    public string mensajeError { get; set; }
+    public string nameActual { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PrestamosId > 0)
+        {
+            prestamos = await prestamosService.Buscar(PrestamosId);
+            nameActual = prestamos.Deudor;
+        }
+    }
+
+    public async Task Modificar()
+    {
+        LimpiarMensajes();
+        if (await prestamosService.ExistePorDeudor(prestamos.Deudor) && nameActual != prestamos.Deudor)
+        {
+            mensajeError = "Existe este nombre del Deudor";
+            return;
+        }
+
+        var modificar = await prestamosService.Guardar(prestamos);
+        if (modificar)
+        {
+            mensaje = "Se modifico el Deudor correctamente";
+        }
+        else
+        {
+            mensajeError = "Error al Modificar";
+        }
+    }
+
+    public void LimpiarMensajes()
+    {
+        mensaje = string.Empty;
+        mensajeError = string.Empty;
+    }
+}
