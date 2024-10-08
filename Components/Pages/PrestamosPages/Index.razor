@@ -39,6 +39,7 @@
                         <th>Nombre del Deudor</th>
                         <th>Concepto</th>
                         <th>Monto</th>
+                        <th>Ver</th>
                         <th>Editar</th>
                         <th>Eliminar</th>
                     </tr>
@@ -51,6 +52,10 @@
                             <td class="text-center">@prestamos.Deudor</td>
                             <td class="text-center">@prestamos.Concepto</td>
                             <td class="text-center">@prestamos.Monto.ToString("N2")</td>
+
+                            <td class="text-center">
+                                <a href="/Prestamos/Details/@prestamos.PrestamosId" class="btn btn-outline-light bi-eye"></a>
+                            </td>
 
                             <td class="text-center">
                                 <a href="/Prestamos/Edit/@prestamos.PrestamosId" class="btn btn-outline-light bi-pencil-square"></a>
