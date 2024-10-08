@@ -19,6 +19,7 @@ namespace WilmerCastillo_Ap1_P1.Models
 
         [Required(ErrorMessage = "Favor Ingresar el Monto del Prestamo")]
 
+        [Range(0.01, double.MaxValue, ErrorMessage = "El monto debe ser mayor a 0")]
         public float Monto { get; set; }    
 
 
