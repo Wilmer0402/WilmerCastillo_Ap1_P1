@@ -3,6 +3,7 @@
 @inject PrestamosService prestamosService
 @inject NavigationManager navigation
 
+
 <PageTitle>Registro Prestamos</PageTitle>
 <div class="container">
     <div class="card shadow-lg">
@@ -32,8 +33,8 @@
             <a href="/Prestamos/Create" class="btn btn-primary bi bi-plus-square-fill mt-3"> Crear</a>
 
             @* Tabla de Prestamos *@
-            <table class="table table-dark table-hover">
-                <thead class="table table-dark table-striped text-center text-white">
+            <table class="table  table-hover">
+                <thead class="table  table-striped text-center text-black">
                     <tr>
                         <th>ID</th>
                         <th>Nombre del Deudor</th>
@@ -54,14 +55,14 @@
                             <td class="text-center">@prestamos.Monto.ToString("N2")</td>
 
                             <td class="text-center">
-                                <a href="/Prestamos/Details/@prestamos.PrestamosId" class="btn btn-outline-light bi-eye"></a>
+                                <a href="/Prestamos/Details/@prestamos.PrestamosId" class="btn btn-outline-dark bi-eye"></a>
                             </td>
 
                             <td class="text-center">
-                                <a href="/Prestamos/Edit/@prestamos.PrestamosId" class="btn btn-outline-light bi-pencil-square"></a>
+                                <a href="/Prestamos/Edit/@prestamos.PrestamosId" class="btn btn-outline-dark bi-pencil-square"></a>
                             </td>
                             <td class="text-center">
-                                <a href="/Prestamos/Delete/@prestamos.PrestamosId" class="btn btn-outline-light bi bi-trash"></a>
+                                <a href="/Prestamos/Delete/@prestamos.PrestamosId" class="btn btn-outline-dark bi bi-trash"></a>
                             </td>
                         </tr>
                     }
