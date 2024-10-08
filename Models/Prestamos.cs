@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WilmerCastillo_Ap1_P1.Models
 {
@@ -9,9 +10,10 @@ namespace WilmerCastillo_Ap1_P1.Models
 
         public int PrestamosId { get; set; }
 
-        [Required(ErrorMessage = "Favor Ingresar el Nombre del Deudador")]
+        [Required(ErrorMessage = "Favor Ingresar el Nombre del Deudor")]
 
-        public string Deudor {  get; set; }
+        public string Deudor {  get; set; } 
+
 
         [Required(ErrorMessage = "Favor Ingresar el Concepto")]
 
@@ -19,8 +21,10 @@ namespace WilmerCastillo_Ap1_P1.Models
 
         [Required(ErrorMessage = "Favor Ingresar el Monto del Prestamo")]
 
-        public float Monto { get; set; }    
+        public float Monto { get; set; }
 
+
+        
 
 
     }
