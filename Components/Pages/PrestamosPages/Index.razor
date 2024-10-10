@@ -50,7 +50,7 @@
                     {
                         <tr>
                             <td class="text-center">@prestamos.PrestamosId</td>
-                            <td class="text-center">@prestamos.Deudor</td>
+                            <td class="text-center">@prestamos.Deudor.Nombres</td>
                             <td class="text-center">@prestamos.Concepto</td>
                             <td class="text-center">@prestamos.Monto.ToString("N2")</td>
 
@@ -94,7 +94,7 @@
                 break;
 
             case "Deudor":
-                prestamos  = await prestamosService.Listar(e => e.Deudor.ToLower().Contains(CriterioBusqueda.ToLower()));
+                prestamos  = await prestamosService.Listar(e => e.Deudor.Nombres.ToLower().Contains(CriterioBusqueda.ToLower()));
                 break;
         }
     }

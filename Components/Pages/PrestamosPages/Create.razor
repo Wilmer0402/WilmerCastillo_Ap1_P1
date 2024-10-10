@@ -1,6 +1,7 @@
 ﻿@page "/Prestamos/Create"
 @rendermode InteractiveServer
 @inject PrestamosService prestamosService
+@inject DeudoresService deudoresService
 @inject NavigationManager navigation
 @inject IJSRuntime js
 
@@ -20,31 +21,31 @@
                 <ValidationMessage For="@(() =>prestamos.PrestamosId)"></ValidationMessage>
 
                 <label for="Deudor" class="form-label"><strong>Nombre del Deudor</strong></label>
-                <InputText id="Deudor" class="form-control" @bind-Value="prestamos.Deudor" @onchange=ValidarId></InputText>
-                <ValidationMessage For="@(() => prestamos.Deudor)"></ValidationMessage>
+                <InputSelect class="form-select" @bind-Value="prestamos.DeudorId">
+                    <option value="" selected disabled >Elija una Opci&oacute;n</option>
+                    @foreach (var deudor in ListaDeudores)
+                    {
+                        <option value="@deudor.DeudorId">@deudor.Nombres</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => prestamos.DeudorId)"></ValidationMessage>
 
                 <label for="concepto" class="form-label"><strong>Concepto</strong></label>
                 <InputText id="concepto" class="form-control" @bind-Value="prestamos.Concepto" @onchange=ValidarId></InputText>
                 <ValidationMessage For="@(() => prestamos.Concepto)"></ValidationMessage>
 
-                @if (!string.IsNullOrEmpty(mensajeErrorNombre))
+            </div>
+            <div class="col-5 ms-3">
+                <label for="Monto" class="form-label"><strong>Monto</strong></label>
+                <InputNumber id="SueldoMensaul" class="form-control" @bind-Value="prestamos.Monto" Step="0.01" />
+                <ValidationMessage For="@(() =>prestamos.Monto)"></ValidationMessage>
+                @if (!string.IsNullOrEmpty(mensajeError))
                 {
-                    <div class="text-danger">
-                        @mensajeErrorNombre
+                    <div class="alert alert-danger" role="alert">
+                        @mensajeError
                     </div>
                 }
             </div>
-            <div class="col-5 ms-3"
-            <label for="Monto" class="form-label"><strong>Monto</strong></label>
-            <InputNumber id="SueldoMensaul" class="form-control" @bind-Value="prestamos.Monto"  Step="0.01" />
-            <ValidationMessage For="@(() =>prestamos.Monto)"></ValidationMessage>
-                @if (!string.IsNullOrEmpty(mensajeError))
-                {
-                        <div class="alert alert-danger" role="alert">
-                        @mensajeError
-                        </div>
-                }
-        </div>
 
             <div class="card-footer">
                 <a href="/Prestamos/Index" class=" btn btn-secondary text-white bi bi-arrow-left"> Volver</a>
@@ -57,15 +58,15 @@
 
 @code {
     [Parameter]
-
-    public int PrestamosId{ get; set; }
+    public int PrestamosId { get; set; }
 
     public Prestamos prestamos { get; set; } = new Prestamos();
     private string mensajeError { get; set; } = string.Empty;
-    private string mensajeErrorNombre { get; set; } = string.Empty;
+    public List<Deudores> ListaDeudores { get; set; } = new List<Deudores>();
 
     protected override async Task OnInitializedAsync()
     {
+        ListaDeudores = await deudoresService.Listar(w => w.DeudorId > 0);
         if (PrestamosId > 0)
         {
             prestamos = await prestamosService.Buscar(PrestamosId);
@@ -78,17 +79,9 @@
 
         if (!await prestamosService.Existe(prestamos.PrestamosId))
         {
-            if (!await prestamosService.ExistePorDeudor(prestamos.Deudor))
-            {
-                await prestamosService.Insertar(prestamos);
-                prestamos = new Prestamos();
-                navigation.NavigateTo("/Prestamos/Index");
-            }
-            else
-            {
-                mensajeErrorNombre = "El Deudor ya Existe, por favor, elija otro nombre";
-            }
-
+            await prestamosService.Insertar(prestamos);
+            prestamos = new Prestamos();
+            navigation.NavigateTo("/Prestamos/Index");
         }
         else
         {
@@ -106,17 +99,4 @@
             }
         }
     }
-
-    public async Task ValidarDeudor(ChangeEventArgs e)
-    {
-        var nombre = e.Value.ToString();
-        mensajeErrorNombre = string.Empty;
-        if (await prestamosService.ExistePorDeudor(nombre))
-        {
-            mensajeErrorNombre = " El Nombre del Deudor ya existe. por favor, elija otro nombre";
-        }
-    }
-
-
-
 }
