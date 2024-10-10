@@ -1,6 +1,7 @@
 ﻿@page "/Prestamos/Edit/{PrestamosId:int}"
 @rendermode InteractiveServer
 @inject PrestamosService prestamosService
+@inject DeudoresService deudoresService
 @inject NavigationManager navigation
 
 <PageTitle>Editar Prestamos</PageTitle>
@@ -12,22 +13,25 @@
                 <h4 style="margin: 0 15px;"><strong>Editar Prestamos:</strong></h4>
             </div>
             <div class="card-body">
-                @*Datos*@
                 <label for="id" class="form-label"><strong>ID</strong></label>
                 <InputNumber id="id" class="form-control" @bind-Value="prestamos.PrestamosId" readonly></InputNumber>
 
                 <label for="Deudor" class="form-label"><strong>Deudor</strong></label>
-                <InputText id="Deudor" class="form-control" @bind-Value="prestamos.Deudor"></InputText>
-                <ValidationMessage For="@(()=> prestamos.Deudor)"></ValidationMessage>
+                <InputSelect class="form-control" @bind-Value="prestamos.DeudorId">
+                    <option value="" selected disabled>Elija una Opci&oacute;n</option>
+                    @foreach (var deudor in ListaDeudores)
+                    {
+                        <option value="@deudor.DeudorId">@deudor.Nombres</option>
+                    }
+                </InputSelect>
 
                 <label for="concepto" class="form-label"><strong>Concepto</strong></label>
                 <InputText id="concepto" class="form-control" @bind-Value="prestamos.Concepto"></InputText>
-                <ValidationMessage For="@(()=> prestamos.Concepto)"></ValidationMessage>
-
+                <ValidationMessage For="@(() => prestamos.Concepto)"></ValidationMessage>
 
                 <label for="Monto" class="form-label"><strong>Monto</strong></label>
                 <InputNumber id="Monto" class="form-control" @bind-Value="prestamos.Monto"></InputNumber>
-                <ValidationMessage For="@(()=> prestamos.Monto)"></ValidationMessage>
+                <ValidationMessage For="@(() => prestamos.Monto)"></ValidationMessage>
             </div>
             <div class="card-footer">
                 @if (!string.IsNullOrEmpty(mensaje))
@@ -55,34 +59,29 @@
     public Prestamos prestamos { get; set; } = new Prestamos();
     public string mensaje { get; set; }
     public string mensajeError { get; set; }
-    public string nameActual { get; set; }
+    public List<Deudores> ListaDeudores { get; set; } = new List<Deudores>();
 
     protected override async Task OnInitializedAsync()
     {
         if (PrestamosId > 0)
         {
             prestamos = await prestamosService.Buscar(PrestamosId);
-            nameActual = prestamos.Deudor;
+            ListaDeudores = await deudoresService.Listar(w => w.DeudorId > 0);
         }
     }
 
     public async Task Modificar()
     {
         LimpiarMensajes();
-        if (await prestamosService.ExistePorDeudor(prestamos.Deudor) && nameActual != prestamos.Deudor)
-        {
-            mensajeError = "Existe este nombre del Deudor";
-            return;
-        }
 
         var modificar = await prestamosService.Guardar(prestamos);
         if (modificar)
         {
-            mensaje = "Se modifico el Deudor correctamente";
+            mensaje = "Se modificó el préstamo correctamente";
         }
         else
         {
-            mensajeError = "Error al Modificar";
+            mensajeError = "Error al modificar el préstamo";
         }
     }
 
