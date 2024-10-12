@@ -1,0 +1,58 @@
+﻿@page "/Cobros/Delete/{CobrosId:int}"
+@rendermode InteractiveServer
+@inject CobrosService cobrosService
+@inject NavigationManager navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Eliminar Cobro</PageTitle>
+
+<div class="card shadow-lg">
+    <div class="card-header bg-white text-black text-center" style="display: flex; align-items: center; justify-content: center;">
+        <h4 style="margin: 0 15px;"><strong>Eliminar Cobro:</strong></h4>
+    </div>
+    <div class="card-body">
+        <h5><strong>¿Seguro que deseas eliminar el Cobro seleccionado?</strong></h5>
+        <div class="mb-1"></div>
+        <p class="mb-0"><strong>Cobro Id:</strong> @cobros.CobrosId</p>
+        <div class="mb-1">
+            <p class="mb-0"><strong>Nombre del Deudor:</strong> @cobros.Deudores?.Nombres</p>
+            <div class="mb-1">
+                <p class="mb-0"><strong>Fecha del Cobro:</strong> @cobros.Fecha.ToShortDateString()</p>
+                <div class="mb-1">
+                    <p class="mb-0"><strong>Monto Total Cobrado:</strong> @cobros.Monto</p>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <a href="/Cobros/Index" class="btn btn-secondary text-white bi bi-arrow-left"> Volver</a>
+                <button type="button" class="btn btn-primary bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CobrosId { get; set; }
+    public Cobros cobros { get; set; } = new Cobros();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cobros = await cobrosService.Buscar(CobrosId);
+    }
+    public async Task Eliminar()
+    {
+        var Eliminar = await cobrosService.Eliminar(cobros.CobrosId);
+        if (Eliminar)
+        {
+            Console.WriteLine("Se ha eliminado correctamente el Prestamo");
+            navigation.NavigateTo("/Cobros/Index");
+        }
+        else
+        {
+            Console.WriteLine("No se ha podido eliminar el Cobro");
+        }
+    }
+}
