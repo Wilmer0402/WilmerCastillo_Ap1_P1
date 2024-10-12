@@ -20,5 +20,6 @@ namespace WilmerCastillo_Ap1_P1.Service
                 .Where(criterio)
                 .ToListAsync();
         }
+
     }
 }

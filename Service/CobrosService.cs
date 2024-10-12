@@ -20,30 +20,45 @@ namespace WilmerCastillo_Ap1_P1.Service
         }
 
         public async Task<bool> Modificar(Cobros cobro)
-
         {
             try
             {
-                // Asegúrate de que los detalles también se estén actualizando.
-                // También puedes ajustar el monto aquí si es necesario.
-                _context.Cobros.Attach(cobro);
-                _context.Entry(cobro).State = EntityState.Modified;
+                // Busca el cobro existente
+                var existingCobro = await _context.Cobros
+                    .Include(c => c.CobrosDetalles)
+                    .FirstOrDefaultAsync(c => c.CobrosId == cobro.CobrosId);
 
+                if (existingCobro == null)
+                    return false;
+
+                // Actualiza las propiedades del cobro
+                _context.Entry(existingCobro).CurrentValues.SetValues(cobro);
+
+                // Actualiza los detalles de cobro
                 foreach (var detalle in cobro.CobrosDetalles)
                 {
-                    _context.Entry(detalle).State = EntityState.Modified;
+                    var existingDetail = existingCobro.CobrosDetalles.FirstOrDefault(d => d.DetallesId == detalle.DetallesId); // Ajusta este acceso según el identificador real de tus detalles
+                    if (existingDetail != null)
+                    {
+                        _context.Entry(existingDetail).CurrentValues.SetValues(detalle);
+                    }
+                    else
+                    {
+                        // Si el detalle no existe, se puede agregar
+                        existingCobro.CobrosDetalles.Add(detalle);
+                    }
                 }
 
+                // Guarda los cambios en la base de datos
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                // Manejo de excepciones
+                Console.WriteLine($"Error al modificar el cobro: {ex.Message}");
                 return false;
             }
         }
-
 
 
         public async Task<bool> Insertar(Cobros cobros)
@@ -69,10 +84,6 @@ namespace WilmerCastillo_Ap1_P1.Service
                     _context.Cobros.Remove(Cobros);
                     await _context.SaveChangesAsync();
                     return true;
-                }
-                else
-                {
-                    Console.WriteLine($"No se encontró el cobro con ID: {id}");
                 }
             }
             catch (Exception ex)
@@ -104,11 +115,10 @@ namespace WilmerCastillo_Ap1_P1.Service
         public async Task<Cobros> BuscarPorId(int cobrosId)
         {
             return await _context.Cobros
-                .Include(c => c.CobrosDetalles) // Include the details here
+                .Include(c => c.CobrosDetalles)
                 .FirstOrDefaultAsync(c => c.CobrosId == cobrosId);
         }
 
+        
     }
-
-
 }
