@@ -11,6 +11,10 @@ namespace WilmerCastillo_Ap1_P1.DAL
 
         public DbSet<Deudores> Deudores { get; set; }
 
+        public DbSet<Cobros> Cobros { get; set; }
+
+        public DbSet<CobrosDetalles> CobrosDetalles { get; set; }   
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
