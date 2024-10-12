@@ -172,7 +172,7 @@
             return;
         }
 
-        // Validación: El valor cobrado no puede ser mayor que el monto prestado
+        
         foreach (var detalle in cobros.CobrosDetalles)
         {
             var prestamo = prestamosFiltrados.FirstOrDefault(p => p.PrestamosId == detalle.PrestamosId);
@@ -276,4 +276,6 @@
             detalle.ValorCobrado = prestamo.Monto;
         }
     }
+
+
 }

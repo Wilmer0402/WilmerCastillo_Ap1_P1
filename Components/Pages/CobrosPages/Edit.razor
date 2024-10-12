@@ -33,8 +33,8 @@
                 <InputDate id="Fecha" class="form-control" @bind-Value="cobros.Fecha" readonly />
                 <ValidationMessage For="@(() => cobros.Fecha)" />
 
-                <label for="Monto" class="form-label"><strong>Monto Total Prestado</strong></label>
-                <InputNumber id="Monto" class="form-control" @bind-Value="cobros.Monto" Step="0.01" readonly />
+                <label for="Monto" class="form-label"><strong>Monto Total Cobrado</strong></label>
+                <InputNumber id="Monto" class="form-control" @bind-Value="cobros.Monto" Step="0.01" />
                 <ValidationMessage For="@(() => cobros.Monto)" />
 
                 <div class="border border-success p-3 rounded mt-4">
@@ -64,7 +64,7 @@
                                         <ValidationMessage For="@(() => detalle.PrestamosId)" />
                                     </td>
                                     <td>
-                                        <InputNumber class="form-control" @bind-Value="detalle.ValorCobrado" Step="0.01" @onchange="() => ActualizarValorCobrado(detalle)" />
+                                        <InputNumber class="form-control" @bind-Value="detalle.ValorCobrado" Step="0.01" @onchange="() => ActualizarMontoCobrado()" />
                                         <ValidationMessage For="@(() => detalle.ValorCobrado)" />
                                     </td>
                                     <td>
@@ -116,13 +116,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Cargar los Deudores y el Cobro a editar
+        
         Deudores = await deudoresService.Listar(w => true);
-        cobros = await cobrosService.BuscarPorId(cobrosId); // Asegúrate de que incluye CobrosDetalles
+        cobros = await cobrosService.BuscarPorId(cobrosId); 
         if (cobros != null)
         {
             prestamosFiltrados = await prestamosService.Listar(w => w.DeudorId == cobros.DeudorId);
-            cobros.Monto = cobros.CobrosDetalles.Sum(d => d.ValorCobrado); // Calcular el monto total de los detalles al inicio
+            ActualizarMontoCobrado(); 
         }
     }
 
@@ -131,7 +131,7 @@
         mensajeError = string.Empty;
         mensajeExito = string.Empty;
 
-        // Validación: El valor cobrado no puede ser mayor que el monto prestado
+       
         foreach (var detalle in cobros.CobrosDetalles)
         {
             var prestamo = prestamosFiltrados.FirstOrDefault(p => p.PrestamosId == detalle.PrestamosId);
@@ -142,15 +142,15 @@
             }
         }
 
-        // Sumar el monto total de los detalles
+        
         cobros.Monto = cobros.CobrosDetalles.Sum(d => d.ValorCobrado);
 
-        // Actualizar el cobro
+        
         var resultado = await cobrosService.Modificar(cobros);
         if (resultado)
         {
             mensajeExito = "Cobro actualizado exitosamente.";
-            // Redirige después de actualizar
+            
             navigation.NavigateTo("/Cobros/Index");
         }
         else
@@ -159,17 +159,17 @@
         }
     }
 
-
     public void AgregarDetalle()
     {
         var nuevoDetalle = new CobrosDetalles();
         if (prestamosFiltrados.Any())
         {
-            nuevoDetalle.PrestamosId = prestamosFiltrados.First().PrestamosId;
+            nuevoDetalle.PrestamosId = prestamosFiltrados.First().PrestamosId; 
+            nuevoDetalle.ValorCobrado = 0; 
         }
         cobros.CobrosDetalles.Add(nuevoDetalle);
-        ActualizarMontoCobrado();
-        StateHasChanged(); // Refrescar UI después de agregar detalle
+        ActualizarMontoCobrado(); 
+        StateHasChanged();
     }
 
     public void EliminarDetalle(CobrosDetalles detalle)
@@ -178,24 +178,16 @@
         {
             cobros.CobrosDetalles.Remove(detalle);
             ActualizarMontoCobrado();
-            StateHasChanged(); // Refrescar UI después de eliminar detalle
+            StateHasChanged(); 
         }
-    }
-
-
- 
-
-    private void ActualizarValorCobrado(CobrosDetalles detalle)
-    {
-        // Actualiza el monto total cada vez que se cambia un valor cobrado en un detalle
-        ActualizarMontoCobrado();
-        StateHasChanged();
     }
 
     private void ActualizarMontoCobrado()
     {
-        cobros.Monto = cobros.CobrosDetalles.Sum(d => d.ValorCobrado); // Recalcula el total
-        StateHasChanged(); // Asegura que la UI se actualice
+        
+        cobros.Monto = cobros.CobrosDetalles.Sum(d => d.ValorCobrado); 
+        Console.WriteLine($"Monto Cobrado Actualizado: {cobros.Monto}"); 
+        StateHasChanged(); 
     }
 
     private void CargarMonto(CobrosDetalles detalle)
@@ -203,9 +195,9 @@
         var prestamo = prestamosFiltrados.FirstOrDefault(p => p.PrestamosId == detalle.PrestamosId);
         if (prestamo != null)
         {
-            detalle.ValorCobrado = prestamo.Monto;
+            detalle.ValorCobrado = prestamo.Monto; 
         }
-        StateHasChanged(); // Refrescar UI después de cargar monto
+        ActualizarMontoCobrado(); 
+        StateHasChanged(); 
     }
-
 }
