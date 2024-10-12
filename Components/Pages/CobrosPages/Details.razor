@@ -1,0 +1,57 @@
+﻿@page "/Cobros/Details/{CobrosId:int}"
+@rendermode InteractiveServer
+@inject CobrosService cobrosService
+@inject NavigationManager navigation
+@inject NavigationManager navigation
+
+<PageTitle>Detalles del Cobro</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        @* Header *@
+        <div class="card-header bg-white text-black text-center" style="display: flex; align-items: center; justify-content: center;">
+            <h4 style="margin: 0 15px;"><strong>Detalles del Cobro:</strong></h4>
+        </div>
+    </div>
+
+    @* Body *@
+    <div class="card-body">
+        <h5><strong>Detalles del Cobro</strong></h5>
+        @if (cobros != null)
+        {
+            @* Datos del Prestamo *@
+            <div class="mb-1">
+                <p class="mb-0"><strong>Cobro Id:</strong> @cobros.CobrosId</p>
+            </div>
+            <div class="mb-1">
+                <p class="mb-0"><strong>Nombre del Deudor:</strong> @cobros.Deudores?.Nombres</p>
+            </div>
+            <div class="mb-1">
+                <p class="mb-0"><strong>Fecha:</strong> @cobros.Fecha.ToShortDateString()</p>
+            </div>
+            <div class="mb-1">
+                <p class="mb-0"><strong>Monto:</strong> @cobros.Monto</p>
+            </div>
+        }
+        else
+        {
+            <p>No se encontro el Cobro con ID @CobrosId.</p>
+        }
+    </div>
+
+    @* Footer *@
+    <div class="card-footer">
+        <a href="/Cobros/Index" class="btn btn-secondary text-white bi bi-arrow-left"> Volver</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CobrosId{ get; set; }
+
+    public Cobros cobros { get; set; } = new Cobros();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cobros = await cobrosService.Buscar(CobrosId);
+    }
+}
