@@ -4,6 +4,7 @@ using WilmerCastillo_Ap1_P1.DAL;
 using WilmerCastillo_Ap1_P1.Models;
 
 public class PrestamosService
+
 {
     public readonly Context _context;
 
@@ -67,6 +68,14 @@ public class PrestamosService
     public async Task<Prestamos> Buscar(int id)
     {
         return await _context.Prestamos.AsNoTracking()
+            .Include(w => w.Deudor)
+            .FirstOrDefaultAsync(w => w.PrestamosId == id);
+    }
+
+    public async Task<Prestamos> BuscarPorId(int id)
+    {
+        return await _context.Prestamos
+            .AsNoTracking()
             .Include(w => w.Deudor)
             .FirstOrDefaultAsync(w => w.PrestamosId == id);
     }
