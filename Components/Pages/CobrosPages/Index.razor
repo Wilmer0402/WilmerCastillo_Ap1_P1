@@ -1,0 +1,100 @@
+﻿@page "/Cobros/Index"
+@rendermode InteractiveServer
+@inject CobrosService cobrosService
+@inject NavigationManager navigation
+
+<PageTitle>Registro de Cobros</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-black text-center">
+            <h5><strong>Registro de Cobros</strong></h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="filtrarPor">Filtrar por:</label>
+                    <select id="filtrarPor" class="form-select" @bind="FiltroSeleccionado">
+                        <option value="ID">ID</option>
+                        <option value="Deudor">Deudor</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 d-flex align-items-end">
+                    <div class="input-group">
+                        <input id="busqueda" type="text" class="form-control" @bind="CriterioBusqueda" placeholder="Buscar..." />
+                        <button @onclick="BuscarCobros" class="btn btn-primary bi bi-search"> Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            @* Botón Crear Cobro *@
+            <a href="/Cobros/Create" class="btn btn-primary bi bi-plus-square-fill mt-3"> Crear</a>
+
+            @* Tabla de Cobros *@
+            <table class="table table-hover">
+                <thead class="table table-striped text-center text-black">
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Monto Cobrado</th>
+                        <th>Deudor</th>
+                        <th>Ver</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cobro in cobros)
+                    {
+                        <tr>
+                            <td class="text-center">@cobro.CobrosId</td>
+                            <td class="text-center">@cobro.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center">@cobro.Monto.ToString("N2")</td>
+                            <td class="text-center">@cobro.Deudores?.Nombres</td>
+
+                            <td class="text-center">
+                                <a href="/Cobros/Details/@cobro.CobrosId" class="btn btn-outline-dark bi-eye"></a>
+                            </td>
+
+                            <td class="text-center">
+                                <a href="/Cobros/Edit/@cobro.CobrosId" class="btn btn-outline-dark bi-pencil-square"></a>
+                            </td>
+                            <td class="text-center">
+                                <a href="/Cobros/Delete/@cobro.CobrosId" class="btn btn-outline-dark bi bi-trash"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Cobros> cobros = new List<Cobros>();
+    private string FiltroSeleccionado { get; set; } = "ID";
+    private string CriterioBusqueda { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cobros = await cobrosService.Listar(a => true);
+    }
+
+    private async Task BuscarCobros()
+    {
+        switch (FiltroSeleccionado)
+        {
+            case "ID":
+                if (int.TryParse(CriterioBusqueda, out int id))
+                {
+                    cobros = await cobrosService.Listar(a => a.CobrosId == id);
+                }
+                break;
+
+            case "Deudor":
+                cobros = await cobrosService.Listar(e => e.Deudores.Nombres.ToLower().Contains(CriterioBusqueda.ToLower()));
+                break;
+        }
+    }
+}
