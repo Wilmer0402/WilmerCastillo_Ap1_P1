@@ -75,19 +75,18 @@
 
     public async Task Crear()
     {
-        mensajeError = string.Empty;
+        if (prestamos.Monto <= 0)
+        {
+            mensajeError = "El monto del Prestamo no puede ser menor o igual a 0";
+            return;
+        }
 
-        if (!await prestamosService.Existe(prestamos.PrestamosId))
-        {
-            await prestamosService.Insertar(prestamos);
-            prestamos = new Prestamos();
-            navigation.NavigateTo("/Prestamos/Index");
-        }
-        else
-        {
-            mensajeError = "Error el Id ya existe. por favor, elija otro Id";
-        }
+        await prestamosService.Guardar(prestamos);
+        prestamos = new Prestamos();
+        navigation.NavigateTo("/Prestamos/Index");
+
     }
+
 
     public async Task ValidarId(ChangeEventArgs e)
     {
