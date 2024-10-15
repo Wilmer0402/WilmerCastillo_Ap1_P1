@@ -11,7 +11,7 @@ using WilmerCastillo_Ap1_P1.DAL;
 namespace WilmerCastillo_Ap1_P1.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20241012191001_Inicial")]
+    [Migration("20241015195508_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
