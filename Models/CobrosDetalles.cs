@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace WilmerCastillo_Ap1_P1.Models
 {
     public class CobrosDetalles
@@ -13,7 +14,6 @@ namespace WilmerCastillo_Ap1_P1.Models
 
         [ForeignKey("Prestamos")]
         public int PrestamosId { get; set; }
-
         public Prestamos? Prestamos { get; set; }
 
         [Required(ErrorMessage = "Favor Ingresar el Valor Cobrado")]
