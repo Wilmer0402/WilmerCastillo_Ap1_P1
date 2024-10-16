@@ -24,14 +24,14 @@
 
                 <label for="DeudorId" class="form-label"><strong>Deudor</strong></label>
                 <div class="d-flex">
-                    <InputSelect id="DeudorId" class="form-control" @bind-Value="cobros.DeudorId" @onchange="CargarPrestamosDeDeudor">
+                    <InputSelect id="DeudorId" class="form-control" @bind-Value="cobros.DeudorId" @onchange="CargarPrestamos">
                         <option value="">Seleccione un Deudor</option>
                         @foreach (var deudor in Deudores)
                         {
                             <option value="@deudor.DeudorId">@deudor.Nombres</option>
                         }
                     </InputSelect>
-                    <button type="button" class="btn btn-outline-primary ms-2 bi bi-search" @onclick="BuscarPrestamosDeDeudor"></button>
+                    <button type="button" class="btn btn-outline-primary ms-2 bi bi-search" @onclick="BuscarPrestamos"></button>
                 </div>
                 <ValidationMessage For="@(() => cobros.DeudorId)" />
 
@@ -54,7 +54,7 @@
                                 <option value="@prestamo.PrestamosId">@prestamo.Concepto</option>
                             }
                         </InputSelect>
-                        <button type="button" class="btn btn-outline-primary ms-3 bi bi-search" @onclick="BuscarMontoPrestamo"></button>
+                        <button type="button" class="btn btn-outline-primary ms-3 bi bi-search" @onclick="BuscarMonto"></button>
 
                         <label for="ValorCobrado" class="form-label ms-3">Valor Cobrado</label>
                         <InputNumber class="form-control ms-3" @bind-Value="NuevoDetalle.ValorCobrado" Step="0.01" />
@@ -176,7 +176,7 @@
         }
     }
 
-    public async Task CargarPrestamosDeDeudor(ChangeEventArgs e)
+    public async Task CargarPrestamos(ChangeEventArgs e)
     {
         mensajeError = string.Empty;
 
@@ -191,7 +191,7 @@
         }
     }
 
-    public async Task BuscarPrestamosDeDeudor()
+    public async Task BuscarPrestamos()
     {
         mensajeError = string.Empty;
 
@@ -209,7 +209,7 @@
         }
     }
 
-    public async Task BuscarMontoPrestamo()
+    public async Task BuscarMonto()
     {
         mensajeError = string.Empty;
 
