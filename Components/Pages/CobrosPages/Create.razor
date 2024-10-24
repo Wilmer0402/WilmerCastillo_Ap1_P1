@@ -17,10 +17,14 @@
             </div>
 
             <div class="card-body">
+                <div class="mb-3">
                 <label for="CobrosId" class="form-label"><strong>CobrosId</strong></label>
                 <InputNumber id="CobrosId" class="form-control" @bind-Value="cobros.CobrosId" />
                 <ValidationMessage For="@(() => cobros.CobrosId)" />
+                </div>
 
+
+                <div class="mb-3">
                 <label for="DeudorId" class="form-label"><strong>Deudor</strong></label>
                 <div class="d-flex">
                     <InputSelect id="DeudorId" class="form-control" @bind-Value="cobros.DeudorId" @onchange="CargarPrestamos">
@@ -33,10 +37,15 @@
                     <button type="button" class="btn btn-outline-primary ms-2 bi bi-search" @onclick="BuscarPrestamos"></button>
                 </div>
                 <ValidationMessage For="@(() => cobros.DeudorId)" />
+                </div>
 
+
+                <div class="mb-3">
                 <label for="Fecha" class="form-label"><strong>Fecha</strong></label>
                 <InputDate id="Fecha" class="form-control" @bind-Value="cobros.Fecha" />
                 <ValidationMessage For="@(() => cobros.Fecha)" />
+                    </div>
+
 
                 <div class="mb-3">
                     <label for="Monto" class="form-label"><strong>Monto Total Prestado</strong></label>
