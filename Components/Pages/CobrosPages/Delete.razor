@@ -6,33 +6,50 @@
 
 <PageTitle>Eliminar Cobro</PageTitle>
 
-<div class="card shadow-lg">
-    <div class="card-header bg-white text-black text-center" style="display: flex; align-items: center; justify-content: center;">
-        <h4 style="margin: 0 15px;"><strong>Eliminar Cobro:</strong></h4>
-    </div>
-    <div class="card-body">
-        <h5><strong>¿Seguro que deseas eliminar el Cobro seleccionado?</strong></h5>
-        <div class="mb-1"></div>
-        <p class="mb-0"><strong>Cobro Id:</strong> @cobros.CobrosId</p>
-        <div class="mb-1">
-            <p class="mb-0"><strong>Nombre del Deudor:</strong> @cobros.Deudores?.Nombres</p>
-            <div class="mb-1">
-                <p class="mb-0"><strong>Fecha del Cobro:</strong> @cobros.Fecha.ToShortDateString()</p>
-                <div class="mb-1">
-                    <p class="mb-0"><strong>Monto Total Cobrado:</strong> @cobros.Monto</p>
-                </div>
+<div class="container mt-5">
+    <div class="card p-4 shadow-lg">
+        <div class="card-header">
+            <h5 class="card-title text-center mb-4  text-black p-2 rounded">Eliminar Cobro</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="list-details">
+                <table class="list-group">
+                    @*Cobro Id*@
+                    <li class="list-group-item">
+                        <strong> Cobro Id:</strong> @cobros.CobrosId
+                    </li>
+
+                    @*Fecha*@
+                    <li class="list-group-item">
+                        <strong>Fecha:</strong> @cobros.Fecha.ToString("dd/MM/yyyy")
+                    </li>
+
+
+                    @*Monto*@
+                    <li class="list-group-item">
+                        <strong>Monto Cobrado:</strong> @cobros.Monto.ToString("N2")
+                    </li>
+
+                    @*Deudor*@
+                    <li class="list-group-item">
+                        <strong>Deudor:</strong> @cobros.Deudores?.Nombres
+                    </li>
+                </table>
             </div>
 
-            <div class="card-footer">
-                <a href="/Cobros/Index" class="btn btn-secondary text-white bi bi-arrow-left"> Volver</a>
-                <button type="button" class="btn btn-primary bi bi-trash" @onclick="Eliminar"> Eliminar</button>
-
-
+            <div>
+                <h5><strong>¿Seguro que deseas Eliminar el Cobro Seleccionado?</strong></h5>
             </div>
+        </div>
+
+
+        <div class="card-footer">
+            <a href="/Cobros/Index" class="btn btn-secondary text-white bi bi-arrow-left"> Volver</a>
+            <button type="button" class="btn btn-primary bi bi-trash" @onclick="Eliminar"> Eliminar</button>
         </div>
     </div>
 </div>
-
 @code {
     [Parameter]
     public int CobrosId { get; set; }
