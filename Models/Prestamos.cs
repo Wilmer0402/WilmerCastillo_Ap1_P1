@@ -19,6 +19,10 @@ namespace WilmerCastillo_Ap1_P1.Models
         [Range(0.01, double.MaxValue, ErrorMessage = "El monto debe ser mayor a 0")]
         public float Monto { get; set; }
 
+        [Required(ErrorMessage = "Por favor ingresar el balance")]
+        [RegularExpression(@"^\d+(\.\d+)?$", ErrorMessage = "Solo se permiten números enteros o decimales")]
+        public double Balance { get; set; }
+
         [ForeignKey("DeudorId")]
 
         public int DeudorId { get; set; }   
