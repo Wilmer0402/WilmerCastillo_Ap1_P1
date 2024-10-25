@@ -55,6 +55,7 @@ namespace WilmerCastillo_Ap1_P1.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Concepto = table.Column<string>(type: "TEXT", nullable: false),
                     Monto = table.Column<float>(type: "REAL", nullable: false),
+                    Balance = table.Column<double>(type: "REAL", nullable: false),
                     DeudorId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

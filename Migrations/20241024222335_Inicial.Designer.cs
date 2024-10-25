@@ -11,7 +11,7 @@ using WilmerCastillo_Ap1_P1.DAL;
 namespace WilmerCastillo_Ap1_P1.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20241015195508_Inicial")]
+    [Migration("20241024222335_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -103,6 +103,9 @@ namespace WilmerCastillo_Ap1_P1.Migrations
                     b.Property<int>("PrestamosId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<double>("Balance")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("Concepto")
                         .IsRequired()
