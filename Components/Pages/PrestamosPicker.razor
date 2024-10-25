@@ -1,0 +1,53 @@
+﻿<div class="col-auto input-group align-items-center">
+    <label class="col-form-label input-group-text">Seleccione:</label>
+
+    <InputSelect class="form-control form-select" @bind-Value="PrestamoId">
+        <option disabled value="0">-- Seleccione un préstamo --</option>
+        @foreach (var prestamo in Prestamos)
+        {
+            <option value="@prestamo.PrestamosId">@prestamo.PrestamosId - @prestamo.Concepto ($@prestamo.Balance.ToString("N2"))</option>
+        }
+    </InputSelect>
+    <label class="col-form-label input-group-text">Valor:</label>
+    <InputNumber class="form-control" id="quantity-input" @bind-Value="Valor" min="0" />
+
+    <button type="button" class="btn btn-outline-success bi bi-plus" @onclick="TriggerSelection">Agregar</button>
+</div>
+@if (ErrorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ErrorMessage
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<Prestamos> Prestamos { get; set; } = [];
+
+    [Parameter]
+    public int PrestamoId { get; set; }
+
+    [Parameter]
+    public double Valor { get; set; }
+
+    [Parameter]
+    public EventCallback<(Prestamos Prestamo, double Valor)> OnPrestamoSelected { get; set; } // Event for  selection
+
+    private string? ErrorMessage { get; set; } = null;
+
+    private async Task TriggerSelection()
+    {
+        ErrorMessage = null;
+        if (PrestamoId > 0)
+        {
+            var prestamoSeleccionado = Prestamos.Single(p => p.PrestamosId == PrestamoId);
+
+            if (Valor > prestamoSeleccionado.Balance)
+            {
+                ErrorMessage = "No es posible cobrar un valor mayor a la deuda";
+                return;
+            }
+            await OnPrestamoSelected.InvokeAsync((prestamoSeleccionado, Valor));
+        }
+    }
+}
