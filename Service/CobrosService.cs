@@ -12,62 +12,46 @@ namespace WilmerCastillo_Ap1_P1.Service
 
         public async Task<bool> Existe(int id)
         {
-            return await _context.Cobros.AnyAsync(a => a.CobrosId == id);
+            return await _context.Cobros
+                .AnyAsync(a => a.CobrosId == id);
         }
 
         private async Task<bool> Insertar(Cobros cobros)
         {
             _context.Cobros.Add(cobros);
+            await AfectarPrestamos(cobros.CobrosDetalles.ToArray(), TipoOperacion.Resta);
             return await _context.SaveChangesAsync() > 0;
         }
 
         private async Task<bool> Modificar(Cobros cobros)
         {
-            var existingCobros = await _context.Cobros
+            var cobroOriginal = await _context.Cobros
                 .Include(c => c.CobrosDetalles)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.CobrosId == cobros.CobrosId);
 
-            if (existingCobros != null)
-            {
+            if (cobroOriginal == null)
+                return false;
 
-                _context.Entry(existingCobros).CurrentValues.SetValues(cobros);
-
-
-                var detallesToRemove = existingCobros.CobrosDetalles
-                    .Where(d => !cobros.CobrosDetalles.Any(cd => cd.DetallesId == d.DetallesId))
-                    .ToList();
-
-                foreach (var detalle in detallesToRemove)
-                {
-                    _context.CobrosDetalles.Remove(detalle);
-                }
-
-
-                foreach (var nuevoDetalle in cobros.CobrosDetalles)
-                {
-                    if (nuevoDetalle.DetallesId > 0)
-                    {
-                        var existingDetalle = existingCobros.CobrosDetalles
-                            .FirstOrDefault(d => d.DetallesId == nuevoDetalle.DetallesId);
-
-                        if (existingDetalle != null)
-                        {
-
-                            _context.Entry(existingDetalle).CurrentValues.SetValues(nuevoDetalle);
-                        }
-                    }
-                    else
-                    {
-                        existingCobros.CobrosDetalles.Add(nuevoDetalle);
-                    }
-                }
-
-                return await _context.SaveChangesAsync() > 0;
-            }
-
-            return false;
+            await AfectarPrestamos(cobroOriginal.CobrosDetalles.ToArray(), TipoOperacion.Suma);
+            await AfectarPrestamos(cobros.CobrosDetalles.ToArray(), TipoOperacion.Resta);
+            _context.Update(cobros);
+            return await _context.SaveChangesAsync() > 0;
         }
 
+
+        private async Task AfectarPrestamos(CobrosDetalles[] detalle, TipoOperacion tipoOperacion)
+        {
+            foreach (var item in detalle)
+            {
+                var prestamo = await _context.Prestamos.SingleAsync(p => p.PrestamosId == item.PrestamosId);
+                if (tipoOperacion == TipoOperacion.Resta)
+                    prestamo.Balance -= item.ValorCobrado;
+                else
+                    prestamo.Balance += item.ValorCobrado;
+
+            }
+        }
 
         public async Task<bool> Guardar(Cobros cobros)
         {
@@ -77,26 +61,40 @@ namespace WilmerCastillo_Ap1_P1.Service
                 return await Modificar(cobros);
         }
 
-        public async Task<bool> Eliminar(int id)
+        public async Task<bool> Eliminar(int cobroId)
         {
-            var Cobros = await _context.Cobros.FindAsync(id);
-            if (Cobros != null)
-            {
-                _context.Cobros.Remove(Cobros);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
+
+            var cobro = await _context.Cobros
+             .Include(c => c.CobrosDetalles)
+             .FirstOrDefaultAsync(c => c.CobrosId == cobroId);
+
+            if (cobro == null) return false;
+
+            await AfectarPrestamos(cobro.CobrosDetalles.ToArray(), TipoOperacion.Suma);
+
+            _context.CobrosDetalles.RemoveRange(cobro.CobrosDetalles);
+            _context.Cobros.Remove(cobro);
+            var cantidad = await _context.SaveChangesAsync();
+            return cantidad > 0;
         }
 
         public async Task<Cobros> Buscar(int id)
         {
-            return await _context.Cobros.Include(d => d.Deudores).Include(d => d.CobrosDetalles).AsNoTracking().FirstOrDefaultAsync(a => a.CobrosId == id);
+            return await _context.Cobros
+                .Include(d => d.Deudores)
+                .Include(d => d.CobrosDetalles)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.CobrosId == id);
         }
 
         public async Task<List<Cobros>> Listar(Expression<Func<Cobros, bool>> criterio)
         {
-            return await _context.Cobros.Include(d => d.Deudores).Include(d => d.CobrosDetalles).AsNoTracking().Where(criterio).ToListAsync();
+            return await _context.Cobros
+                .Include(d => d.Deudores)
+                .Include(d => d.CobrosDetalles)
+                .AsNoTracking()
+                .Where(criterio)
+                .ToListAsync();
         }
 
         public async Task<Cobros> ObtenerPorId(int id)
@@ -106,5 +104,11 @@ namespace WilmerCastillo_Ap1_P1.Service
                 .FirstOrDefaultAsync(c => c.CobrosId == id);
         }
 
+    }
+
+    public enum TipoOperacion
+    {
+        Suma = 1,
+        Resta = 2
     }
 }
